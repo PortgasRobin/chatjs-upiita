@@ -19,9 +19,9 @@ var servidor = http.createServer(app);
 
 //obtenmos las puertos necesarios para trabajar en openshift o localmente
 if (process.env.OPENSHIFT_NODEJS_PORT) {
-	servidor.listen(process.env.OPENSHIFT_NODEJS_PORT, process.env.OPENSHIFT_NODEJS_IP);
+servidor.listen(process.env.OPENSHIFT_NODEJS_PORT, process.env.OPENSHIFT_NODEJS_IP);
 } else {
-	servidor.listen(8021);
+servidor.listen(8021);
 }
 
 //---- configuracion de carpetas estaticas ----
@@ -37,25 +37,30 @@ console.log("servidor web listo");
 
 app.get("/", function(req, res) {
 
-	res.render("cliente");
+res.render("cliente");
 
 });
 
+
+
 //--------HABILITAMOS WEBSOCKETS---------
-/*var io = socketio.listen(servidor);
+
+var io = socketio.listen(servidor);
 //habilita un websocket en el puero 8021-se deb mostar info -socket.io
 //para cada cliente
+//escuchando peticiones de conexión de los clientes
 io.sockets.on("connection", function(socket) {
-	//para el cliente que se comunica
-	//socket.on Cuando recibe mensajes del cliente
-	socket.on("mensaje_al_servidor", function(datosCliente) {
-		//alert("ataque") XSS
-		var nombre = validator.escape(datosCliente.nombre);
-		var mensaje = validator.escape(datosCliente.mensaje);
-		//emite un mensaje al cliente
-		io.sockets.emit("mensaje_al_cliente", {
-			nombre : nombre,
-			mensaje : mensaje
-		});
-	});
-});*/
+//escuchamos si el cliente me envia un mensaje
+socket.on("mensaje_al_servidor", function(datosCliente) {
+//alert("ataque") XSS;
+//var nombre = validator.escape(datosCliente.nombre);
+//var mensaje = validator.escape(datosCliente.mensaje);
+var nombreCliente = datosCliente.nombre;
+var mensajeCliente = datosCliente.mensaje;
+//emite un mensaje al cliente
+io.sockets.emit("mensaje_al_cliente", {
+nombre : nombreCliente,
+mensaje : mensajeCliente
+});
+});
+});
